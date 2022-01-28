@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Zoho People</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="snackbar_enable_gps">"Looks like your location is turned off. "</string>
+    <string name="snackbar_bt_settings">GO TO SETTINGS</string>
+    <string name="cd_location">Image of map with smiley sun</string>
+    <string name="dialog_loc_title">Do you want to give location access?</string>
+    <string name="dialog_loc_msg">Relax, your location data is safe. Current location is only used for weather updates.</string>
+    <string name="bt_cancel">CANCEL</string>
+    <string name="bt_ok">OKAY</string>
+</resources>
