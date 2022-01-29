@@ -17,13 +17,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.zohointerviewtest.zohopeople.databinding.FragmentListBinding
+import com.zohointerviewtest.zohopeople.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class ListFragment : Fragment() {
@@ -52,11 +56,9 @@ class ListFragment : Fragment() {
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             // GPS/Location Turned on - now, weather can be updated - call displayWeather()
-            observeWeather()
+            observeLocation()
         } else {
             // User was prompted to turn on location, but chose not to
-            // TODO: Save last location and to display weather of that location with
-            //  a prompt to user that location is turned off
             updateUIWithoutWeather()
         }
     }
@@ -67,14 +69,46 @@ class ListFragment : Fragment() {
     ): View {
         // Bind the layout for this fragment
         binding = FragmentListBinding.inflate(inflater, container, false)
+        displayDate()
+        observeWeather()
         checkLocationPermission()
         return binding.root
     }
 
+    private fun displayDate() {
+        val currentDate = SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault())
+        val dateString: String = currentDate.format(Date())
+        binding.tvDate.text = dateString
+    }
+
+    private fun observeLocation() {
+        Log.d("TEST", "observe location: called")
+        viewModel.currentLocation.observe(viewLifecycleOwner) {
+            it?.let {
+                viewModel.getLatestWeather(Utils.isOnline(requireContext()))
+                Log.d("TEST", "location: ${it.toString()}")
+            }
+        }
+    }
+
     private fun observeWeather() {
-        viewModel.currentLocation.observe(viewLifecycleOwner) { location ->
-            Log.d("TEST", "Lat: ${location.latitude} Long: ${location.longitude}")
-            binding.tvTest.text = location.latitude.toString()
+        viewModel.currentWeather.observe(viewLifecycleOwner) { weather ->
+            weather?.let {
+                // Set the temperature text
+                binding.tvTemp.text = getString(R.string.temp_cel, it.celsius)
+                // Set the AirQuality Index text
+                binding.tvAqi.text = getString(
+                    R.string.aqi_string,
+                    Utils.getAirQualityMeasure(it.aqi_index),
+                    it.aqi_index
+                )
+                // Set the image icon
+                Glide.with(this)
+                    .load(Utils.getIconUrl(it.icon_url))
+                    .placeholder(R.drawable.ic_night)
+                    .error(R.drawable.ic_sad_cloud)
+                    .into(binding.ivWeatherIcon)
+            }
         }
     }
 
@@ -91,8 +125,8 @@ class ListFragment : Fragment() {
                 val states = response.locationSettingsStates
                 if (states != null) {
                     if (states.isLocationPresent) {
-                        // GPS is enabled, now display weather
-                        observeWeather()
+                        // GPS is enabled, now display latest weather
+                        observeLocation()
                     }
                 }
             }
@@ -121,9 +155,10 @@ class ListFragment : Fragment() {
     }
 
     private fun updateUIWithoutWeather() {
-        // Explain to the user that current weather is unavailable
+        // Let user know that current weather is unavailable
         // because weather requires location permission that the user has denied.
-        binding.tvTest.text = "No location detected"
+        binding.tvTemp.text = getString(R.string.not_applicable)
+        binding.ivWeatherIcon.setImageResource(R.drawable.ic_sad_cloud)
     }
 
     private fun checkLocationPermission() {

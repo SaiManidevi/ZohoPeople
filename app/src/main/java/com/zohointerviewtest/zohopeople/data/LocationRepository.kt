@@ -22,16 +22,14 @@ class LocationRepository @Inject constructor(context: Context) {
     // Using - @SuppressLint("MissingPermission")
     @SuppressLint("MissingPermission")
     fun getLocation(): MutableLiveData<Location> {
-        Log.d("TEST", "Inside getLocation - repo")
+        Log.d("TEST", "Loc Repo: getlocation: called")
         fusedLocationProviderClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
                 if (location != null) {
-                    Log.d("TEST", "Location not null $currentLocation")
                     currentLocation.value = location
                 } else {
                     // If last known location is null, request for current location
-                    Log.d("TEST", "Location null")
                     val locationRequest = LocationRequest.create()
                     locationRequest.priority = PRIORITY_HIGH_ACCURACY
                     locationCallback = object : LocationCallback() {
@@ -42,7 +40,6 @@ class LocationRepository @Inject constructor(context: Context) {
                                 }
                             }
                             // After receiving the current location, remove location update request
-                            Log.d("TEST", "Current loc: $currentLocation")
                             removeLocationRequest()
                         }
                     }
@@ -53,11 +50,11 @@ class LocationRepository @Inject constructor(context: Context) {
                     )
                 }
             }
+        Log.d("TEST", "Loc Repo: current location: ${currentLocation.value}")
         return currentLocation
     }
 
     private fun removeLocationRequest() {
-        Log.d("TEST", "Remove Location")
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
