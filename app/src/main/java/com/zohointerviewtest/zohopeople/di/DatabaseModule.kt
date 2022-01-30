@@ -1,8 +1,7 @@
 package com.zohointerviewtest.zohopeople.di
 
 import android.content.Context
-import androidx.room.Room
-import com.zohointerviewtest.zohopeople.data.local.WeatherDatabase
+import com.zohointerviewtest.zohopeople.data.local.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,11 +15,19 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideWeatherDatabase(@ApplicationContext context: Context): WeatherDatabase{
-        return WeatherDatabase.getWeatherDbInstance(context)
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return AppDatabase.getAppDbInstance(context)
     }
 
     @Singleton
     @Provides
-    fun provideWeatherDao(weatherDatabase: WeatherDatabase) = weatherDatabase.weatherDao()
+    fun provideWeatherDao(appDatabase: AppDatabase) = appDatabase.weatherDao()
+
+    @Singleton
+    @Provides
+    fun providePersonDao(appDatabase: AppDatabase) = appDatabase.personDao()
+
+    @Singleton
+    @Provides
+    fun provideRemoteKeysDao(appDatabase: AppDatabase) = appDatabase.remoteKeysDao()
 }

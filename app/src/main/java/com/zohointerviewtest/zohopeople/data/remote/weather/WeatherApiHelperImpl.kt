@@ -1,4 +1,4 @@
-package com.zohointerviewtest.zohopeople.data.remote
+package com.zohointerviewtest.zohopeople.data.remote.weather
 
 import com.zohointerviewtest.zohopeople.models.weatherapi.WeatherResult
 import retrofit2.Response

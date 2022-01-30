@@ -1,4 +1,4 @@
-package com.zohointerviewtest.zohopeople.data.local
+package com.zohointerviewtest.zohopeople.data.local.weather
 
 import androidx.room.Dao
 import androidx.room.Insert

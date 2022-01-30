@@ -3,96 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent_fragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:backgroundTint="#FFF9C4">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_list_weather"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_margin="@dimen/margin_small"
+            app:cardBackgroundColor="@color/light_yellow"
+            app:cardElevation="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                android:layout_height="match_parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tv_welcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_medium"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/welcome_heading"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_large"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/tv_welcome"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin_medium"
-                        android:fontFamily="@font/montserrat"
-                        android:text="@string/welcome_heading"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_large"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_welcome"
+                    tools:text="27 January, 2022" />
 
-                    <TextView
-                        android:id="@+id/tv_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_medium"
-                        android:textColor="@color/black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_welcome"
-                        tools:text="27 January, 2022" />
+                <ImageView
+                    android:id="@+id/iv_weather_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/cd_icon_person"
+                    android:src="@drawable/ic_night"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_temp"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_temp"
+                    app:layout_constraintHorizontal_bias="0.7"
+                    app:layout_constraintStart_toEndOf="@+id/tv_welcome"
+                    app:layout_constraintTop_toTopOf="@+id/tv_temp" />
 
-                    <ImageView
-                        android:id="@+id/iv_weather_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_night"
-                        app:layout_constraintBottom_toBottomOf="@+id/tv_temp"
-                        app:layout_constraintEnd_toStartOf="@+id/tv_temp"
-                        app:layout_constraintHorizontal_bias="0.7"
-                        app:layout_constraintStart_toEndOf="@+id/tv_welcome"
-                        app:layout_constraintTop_toTopOf="@+id/tv_temp" />
+                <TextView
+                    android:id="@+id/tv_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_medium"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_very_large"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_welcome"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_welcome"
+                    tools:text="27\u00B0C" />
 
-                    <TextView
-                        android:id="@+id/tv_temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_medium"
-                        android:fontFamily="@font/montserrat"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_very_large"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/tv_welcome"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tv_welcome"
-                        tools:text="27\u00B0C" />
+                <TextView
+                    android:id="@+id/tv_aqi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_temp"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_weather_icon"
+                    tools:text="AQI: Moderate Okay\nPM10: 80.30" />
 
-                    <TextView
-                        android:id="@+id/tv_aqi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
-                        android:textColor="@color/black"
-                        app:layout_constraintEnd_toEndOf="@+id/tv_temp"
-                        app:layout_constraintTop_toBottomOf="@+id/iv_weather_icon"
-                        tools:text="AQI: Moderate Okay\nPM10: 80.30" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_zoho_people"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".ListFragment">
+            android:layout_marginTop="@dimen/margin_small"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/card_list_weather" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

@@ -7,4 +7,9 @@ object Constants {
     const val QUERY_PARAM_WEATHER_KEY = "key"
     const val QUERY_PARAM_WEATHER = "q"
     const val QUERY_PARAM_WEATHER_AQI = "aqi"
+
+    const val PEOPLE_BASE_URL: String = "https://randomuser.me/"
+    const val PATH_PEOPLE_API = "api"
+    const val QUERY_PARAM_PEOPLE_RESULTS: String = "results"
+    const val QUERY_PARAM_PEOPLE_PAGE: String = "page"
 }

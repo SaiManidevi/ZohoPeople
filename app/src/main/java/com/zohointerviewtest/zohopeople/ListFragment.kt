@@ -17,21 +17,28 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
+import com.zohointerviewtest.zohopeople.adapters.PeopleAdapter
 import com.zohointerviewtest.zohopeople.databinding.FragmentListBinding
 import com.zohointerviewtest.zohopeople.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
 class ListFragment : Fragment() {
     private lateinit var binding: FragmentListBinding
+    private lateinit var adapter: PeopleAdapter
     private val viewModel: PeopleListViewModel by viewModels()
 
     // Register the permissions callback, which handles the user's response to the
@@ -55,8 +62,8 @@ class ListFragment : Fragment() {
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // GPS/Location Turned on - now, weather can be updated - call displayWeather()
-            observeLocation()
+            // GPS/Location Turned on - now, weather can be updated - get the latest location
+            getLatestLocation()
         } else {
             // User was prompted to turn on location, but chose not to
             updateUIWithoutWeather()
@@ -72,7 +79,25 @@ class ListFragment : Fragment() {
         displayDate()
         observeWeather()
         checkLocationPermission()
+        adapter = PeopleAdapter()
+        binding.rvZohoPeople.adapter = adapter
+        fetchZohoPeople()
         return binding.root
+    }
+
+    private fun fetchZohoPeople() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            viewModel.getZohoPeople().distinctUntilChanged().collectLatest {
+                adapter.submitData(it)
+            }
+        }
+
+        /*viewModel.getZohoPeople()
+        viewModel.zohoPeopleList.observe(viewLifecycleOwner) {
+            if (it != null)
+                adapter.submitData(lifecycle, it)
+        }*/
+
     }
 
     private fun displayDate() {
@@ -81,19 +106,16 @@ class ListFragment : Fragment() {
         binding.tvDate.text = dateString
     }
 
-    private fun observeLocation() {
+    private fun getLatestLocation() {
         Log.d("TEST", "observe location: called")
-        viewModel.currentLocation.observe(viewLifecycleOwner) {
-            it?.let {
-                viewModel.getLatestWeather(Utils.isOnline(requireContext()))
-                Log.d("TEST", "location: ${it.toString()}")
-            }
-        }
+        viewModel.getLocation(Utils.isOnline(requireContext()))
     }
 
     private fun observeWeather() {
+        Log.d("TEST", "observe weather called")
         viewModel.currentWeather.observe(viewLifecycleOwner) { weather ->
             weather?.let {
+                Log.d("TEST", "observe weather - current weather: ${it.celsius}")
                 // Set the temperature text
                 binding.tvTemp.text = getString(R.string.temp_cel, it.celsius)
                 // Set the AirQuality Index text
@@ -126,7 +148,7 @@ class ListFragment : Fragment() {
                 if (states != null) {
                     if (states.isLocationPresent) {
                         // GPS is enabled, now display latest weather
-                        observeLocation()
+                        getLatestLocation()
                     }
                 }
             }

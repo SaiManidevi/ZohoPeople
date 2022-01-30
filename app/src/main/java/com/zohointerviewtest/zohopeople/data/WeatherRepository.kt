@@ -1,8 +1,9 @@
 package com.zohointerviewtest.zohopeople.data
 
-import com.zohointerviewtest.zohopeople.data.local.Weather
-import com.zohointerviewtest.zohopeople.data.local.WeatherDao
-import com.zohointerviewtest.zohopeople.data.remote.WeatherApiHelper
+import android.util.Log
+import com.zohointerviewtest.zohopeople.data.local.weather.Weather
+import com.zohointerviewtest.zohopeople.data.local.weather.WeatherDao
+import com.zohointerviewtest.zohopeople.data.remote.weather.WeatherApiHelper
 import com.zohointerviewtest.zohopeople.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -36,6 +37,7 @@ class WeatherRepository @Inject constructor(
     }
 
     private suspend fun getWeatherFromRemoteServer(coordinates: String) {
+        Log.d("TEST", "getWeatherFromRemoteServer: called")
         val latestWeatherResponse = weatherApiHelper.getCurrentWeather(
             Constants.KEY,
             coordinateString = coordinates,
@@ -53,6 +55,7 @@ class WeatherRepository @Inject constructor(
                 )
                 // If weather response from api is successful, then save it to DB
                 weatherDao.saveWeather(currentWeather)
+                Log.d("TEST", "Weather from remote server successful")
             }
         }
     }

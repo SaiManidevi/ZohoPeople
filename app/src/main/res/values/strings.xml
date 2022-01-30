@@ -11,4 +11,6 @@
     <string name="temp_cel">%1$d\u00B0C</string>
     <string name="aqi_string">AQI: %1$s \nPM-10: %2$d</string>
     <string name="not_applicable">NA</string>
+    <string name="placeholder_text">Oops! Something\'s wrong!</string>
+    <string name="cd_icon_person">Image of the person</string>
 </resources>

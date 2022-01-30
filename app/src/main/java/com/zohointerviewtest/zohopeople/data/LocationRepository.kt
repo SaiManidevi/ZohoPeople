@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -22,7 +21,6 @@ class LocationRepository @Inject constructor(context: Context) {
     // Using - @SuppressLint("MissingPermission")
     @SuppressLint("MissingPermission")
     fun getLocation(): MutableLiveData<Location> {
-        Log.d("TEST", "Loc Repo: getlocation: called")
         fusedLocationProviderClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
@@ -50,7 +48,6 @@ class LocationRepository @Inject constructor(context: Context) {
                     )
                 }
             }
-        Log.d("TEST", "Loc Repo: current location: ${currentLocation.value}")
         return currentLocation
     }
 
