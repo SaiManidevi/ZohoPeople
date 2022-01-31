@@ -8,7 +8,7 @@ import com.zohointerviewtest.zohopeople.models.zohoPeopleApi.PeopleResult
 import retrofit2.HttpException
 import java.io.IOException
 
-class PeopleRemotePagingSource(private val repository: PeopleRepository) :
+class PeopleRemotePagingSource(private val apiHelper: PeopleApiHelper) :
     PagingSource<Int, PeopleResult>() {
 
     override fun getRefreshKey(state: PagingState<Int, PeopleResult>): Int? {
@@ -18,7 +18,7 @@ class PeopleRemotePagingSource(private val repository: PeopleRepository) :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PeopleResult> {
         return try {
             val nextPageNumber = params.key ?: DEFAULT_INIT_PAGE
-            val response = repository.getZohoPeople(limit = LIMIT, nextPage = nextPageNumber)
+            val response = apiHelper.getZohoPeople(limit = LIMIT, nextPage = nextPageNumber)
             LoadResult.Page(
                 data = response.body()?.results ?: emptyList(),
                 prevKey = null,

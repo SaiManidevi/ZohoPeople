@@ -1,11 +1,9 @@
 package com.zohointerviewtest.zohopeople
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.*
-import androidx.paging.*
+import androidx.paging.PagingData
 import com.zohointerviewtest.zohopeople.data.LocationRepository
-import com.zohointerviewtest.zohopeople.data.PeopleRemotePagingSource
 import com.zohointerviewtest.zohopeople.data.PeopleRepository
 import com.zohointerviewtest.zohopeople.data.WeatherRepository
 import com.zohointerviewtest.zohopeople.data.local.weather.Weather
@@ -43,23 +41,8 @@ class PeopleListViewModel @Inject constructor(
             }.asLiveData()
     }
 
-    /*fun getZohoPeople(): Flow<PagingData<PeopleResult>> {
+    fun getZohoPeople(): Flow<PagingData<PeopleResult>> {
         return peopleRepository.getZohoPeople()
-
-    }
-*/
-    fun getZohoPeople(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<PeopleResult>> {
-        return Pager(
-            config = pagingConfig,
-            pagingSourceFactory = { PeopleRemotePagingSource(repository = peopleRepository) }
-        ).flow
-    }
-
-    private fun getDefaultPageConfig(): PagingConfig {
-        return PagingConfig(
-            pageSize = PeopleRepository.DEFAULT_PAGE_SIZE,
-            enablePlaceholders = false
-        )
     }
 
     /**
@@ -68,7 +51,6 @@ class PeopleListViewModel @Inject constructor(
      */
     private fun getLatestWeather(isInternetAvailable: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("TEST", "getLatestWeather called internet status: $isInternetAvailable")
             val location = currentLocation.value
             weatherRepository.loadLatestWeather(
                 isInternetAvailable,

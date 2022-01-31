@@ -14,14 +14,10 @@ import javax.inject.Singleton
 @Singleton
 class PeopleRepository @Inject constructor(private val apiHelper: PeopleApiHelper) {
 
-     suspend fun getZohoPeople(limit: Int, nextPage: Int) = withContext(Dispatchers.IO) {
-         apiHelper.getZohoPeople(limit, nextPage)
-     }
-
-    /*fun getZohoPeople(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<PeopleResult>> {
+    fun getZohoPeople(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<PeopleResult>> {
         return Pager(
             config = pagingConfig,
-            pagingSourceFactory = { PeopleRemotePagingSource(apiHelper) }
+            pagingSourceFactory = { PeopleRemotePagingSource(apiHelper = apiHelper) }
         ).flow
     }
 
@@ -30,11 +26,10 @@ class PeopleRepository @Inject constructor(private val apiHelper: PeopleApiHelpe
             pageSize = DEFAULT_PAGE_SIZE,
             enablePlaceholders = false
         )
-    }*/
-
-    companion object {
-        const val DEFAULT_PAGE_SIZE = 5
     }
 
+    companion object {
+        const val DEFAULT_PAGE_SIZE = 2
+    }
 
 }
