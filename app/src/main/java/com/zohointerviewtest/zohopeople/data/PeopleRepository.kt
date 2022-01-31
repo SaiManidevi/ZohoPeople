@@ -1,18 +1,35 @@
 package com.zohointerviewtest.zohopeople.data
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.zohointerviewtest.zohopeople.data.local.AppDatabase
+import com.zohointerviewtest.zohopeople.data.local.zohopeople.PersonDao
+import com.zohointerviewtest.zohopeople.data.local.zohopeople.RemoteKeysDao
 import com.zohointerviewtest.zohopeople.data.remote.zohopeople.PeopleApiHelper
 import com.zohointerviewtest.zohopeople.models.zohoPeopleApi.PeopleResult
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PeopleRepository @Inject constructor(private val apiHelper: PeopleApiHelper) {
+class PeopleRepository @Inject constructor(
+    private val apiHelper: PeopleApiHelper,
+    private val appDatabase: AppDatabase,
+    private val personDao: PersonDao,
+    private val remoteKeysDao: RemoteKeysDao
+) {
+
+    @ExperimentalPagingApi
+    fun getZohoPeopleDb(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<PeopleResult>> {
+        val pagingSourceFactory = { personDao.getAllPersons() }
+        return Pager(
+            config = pagingConfig,
+            pagingSourceFactory = pagingSourceFactory,
+            remoteMediator = ZohoPeopleRemoteMediator(apiHelper, appDatabase, personDao, remoteKeysDao)
+        ).flow
+    }
 
     fun getZohoPeople(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<PeopleResult>> {
         return Pager(

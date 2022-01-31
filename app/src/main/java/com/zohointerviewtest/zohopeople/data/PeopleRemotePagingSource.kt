@@ -11,10 +11,6 @@ import java.io.IOException
 class PeopleRemotePagingSource(private val apiHelper: PeopleApiHelper) :
     PagingSource<Int, PeopleResult>() {
 
-    override fun getRefreshKey(state: PagingState<Int, PeopleResult>): Int? {
-        return null
-    }
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PeopleResult> {
         return try {
             val nextPageNumber = params.key ?: DEFAULT_INIT_PAGE
@@ -30,22 +26,10 @@ class PeopleRemotePagingSource(private val apiHelper: PeopleApiHelper) :
         } catch (exception: HttpException) {
             LoadResult.Error(exception)
         }
+    }
 
-        /*val limit = LIMIT
-        val page = params.key ?: DEFAULT_INIT_PAGE
-        return try {
-            val response = repository.getZohoPeople(limit = limit, nextPage = page)
-            Log.d("TEST", "Response: ${response.body()}")
-            LoadResult.Page(
-                prevKey = if (page == DEFAULT_INIT_PAGE) null else page - 1,
-                nextKey = if (response.body()?.info?.page == PAGE_END_LIMIT) null else page + 1,
-                data = response.body()?.results ?: emptyList()
-            )
-        } catch (exception: IOException) {
-            return LoadResult.Error(exception)
-        } catch (exception: HttpException) {
-            return LoadResult.Error(exception)
-        }*/
+    override fun getRefreshKey(state: PagingState<Int, PeopleResult>): Int? {
+        return null
     }
 
     companion object {

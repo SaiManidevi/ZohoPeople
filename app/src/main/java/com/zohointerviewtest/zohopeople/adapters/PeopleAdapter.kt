@@ -7,18 +7,19 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.zohointerviewtest.zohopeople.listscreen.PeopleListViewModel
 import com.zohointerviewtest.zohopeople.R
 import com.zohointerviewtest.zohopeople.databinding.ItemPersonBinding
 import com.zohointerviewtest.zohopeople.models.zohoPeopleApi.PeopleResult
 import com.zohointerviewtest.zohopeople.models.zohoPeopleApi.submodels.Name
 
-class PeopleAdapter :
+class PeopleAdapter(private val peopleListViewModel: PeopleListViewModel) :
     PagingDataAdapter<PeopleResult, PeopleAdapter.PeopleAdapterViewHolder>(PeopleResultsDiffCallback()) {
 
     override fun onBindViewHolder(holder: PeopleAdapterViewHolder, position: Int) {
         val currentPerson = getItem(position)
         if (currentPerson == null) holder.bindPlaceholder(holder.itemView.context)
-        else holder.bind(currentPerson, holder.itemView.context)
+        else holder.bind(peopleListViewModel, currentPerson, holder.itemView.context)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleAdapterViewHolder {
@@ -28,7 +29,16 @@ class PeopleAdapter :
     class PeopleAdapterViewHolder(private val binding: ItemPersonBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(currentPerson: PeopleResult, context: Context) {
+        fun bind(
+            peopleListViewModel: PeopleListViewModel,
+            currentPerson: PeopleResult,
+            context: Context
+        ) {
+            binding.apply {
+                viewmodel = peopleListViewModel
+                person = currentPerson
+                executePendingBindings()
+            }
             binding.itemTvNameFirst.text = getFirstName(currentPerson.name)
             binding.itemTvNameLast.text = currentPerson.name.last
             val currentPersonImageUrl = currentPerson.picture.thumbnail

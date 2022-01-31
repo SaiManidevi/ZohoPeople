@@ -1,13 +1,15 @@
-package com.zohointerviewtest.zohopeople
+package com.zohointerviewtest.zohopeople.listscreen
 
 import android.location.Location
 import androidx.lifecycle.*
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import com.zohointerviewtest.zohopeople.data.LocationRepository
 import com.zohointerviewtest.zohopeople.data.PeopleRepository
 import com.zohointerviewtest.zohopeople.data.WeatherRepository
 import com.zohointerviewtest.zohopeople.data.local.weather.Weather
 import com.zohointerviewtest.zohopeople.models.zohoPeopleApi.PeopleResult
+import com.zohointerviewtest.zohopeople.utils.Event
 import com.zohointerviewtest.zohopeople.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +45,19 @@ class PeopleListViewModel @Inject constructor(
 
     fun getZohoPeople(): Flow<PagingData<PeopleResult>> {
         return peopleRepository.getZohoPeople()
+    }
+
+    @ExperimentalPagingApi
+    fun getZohoPeopleFromDb(): Flow<PagingData<PeopleResult>> {
+        return peopleRepository.getZohoPeopleDb()
+    }
+
+    // State that observes/listens to Person item click
+    private val _personClickEvent = MutableLiveData<Event<PeopleResult>>()
+    val personClickEvent: LiveData<Event<PeopleResult>> get() = _personClickEvent
+
+    fun onZohoPersonClick(peopleResult: PeopleResult) {
+        _personClickEvent.value = Event(peopleResult)
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.zohointerviewtest.zohopeople.data
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.zohointerviewtest.zohopeople.data.local.weather.Weather
 import com.zohointerviewtest.zohopeople.data.local.weather.WeatherDao
 import com.zohointerviewtest.zohopeople.data.remote.weather.WeatherApiHelper
@@ -37,7 +38,6 @@ class WeatherRepository @Inject constructor(
     }
 
     private suspend fun getWeatherFromRemoteServer(coordinates: String) {
-        Log.d("TEST", "getWeatherFromRemoteServer: called")
         val latestWeatherResponse = weatherApiHelper.getCurrentWeather(
             Constants.KEY,
             coordinateString = coordinates,
@@ -55,10 +55,41 @@ class WeatherRepository @Inject constructor(
                 )
                 // If weather response from api is successful, then save it to DB
                 weatherDao.saveWeather(currentWeather)
-                Log.d("TEST", "Weather from remote server successful")
             }
         }
     }
+
+    suspend fun getWeatherForGivenCoordinates(coordinates: String): Weather {
+        val latestWeatherResponse = weatherApiHelper.getCurrentWeather(
+            Constants.KEY,
+            coordinateString = coordinates,
+            addAirQuality = "YES"
+        )
+        val weather = if (latestWeatherResponse.isSuccessful) {
+            latestWeatherResponse.body()?.let {
+                Weather(
+                    city = it.location.name,
+                    celsius = it.current.temp_c.toInt(),
+                    fahrenheit = it.current.temp_f.toInt(),
+                    aqi_index = it.current.air_quality.pm10.toInt(),
+                    icon_url = it.current.condition.icon
+                )
+            } ?: DEFAULT_WEATHER
+        } else DEFAULT_WEATHER
+        return weather
+    }
+    /*return if (latestWeatherResponse.isSuccessful) {
+        val latestWeather = latestWeatherResponse.body()
+        latestWeather?.let {
+            Weather(
+                city = it.location.name,
+                celsius = it.current.temp_c.toInt(),
+                fahrenheit = it.current.temp_f.toInt(),
+                aqi_index = it.current.air_quality.pm10.toInt(),
+                icon_url = it.current.condition.icon
+            )
+        }
+    } else DEFAULT_WEATHER*/
 
     private fun getWeatherFromDB(): NetworkResult<Flow<Weather>> {
         return try {
@@ -66,5 +97,9 @@ class WeatherRepository @Inject constructor(
         } catch (e: Exception) {
             NetworkResult.Error(e)
         }
+    }
+
+    companion object {
+        val DEFAULT_WEATHER: Weather = Weather("N/A", 0, 0, 0, "")
     }
 }

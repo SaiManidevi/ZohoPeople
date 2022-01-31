@@ -1,4 +1,4 @@
-package com.zohointerviewtest.zohopeople
+package com.zohointerviewtest.zohopeople.listscreen
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
@@ -6,7 +6,6 @@ import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,14 +17,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.paging.ExperimentalPagingApi
 import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
+import com.zohointerviewtest.zohopeople.R
 import com.zohointerviewtest.zohopeople.adapters.PeopleAdapter
 import com.zohointerviewtest.zohopeople.databinding.FragmentListBinding
+import com.zohointerviewtest.zohopeople.utils.EventObserver
 import com.zohointerviewtest.zohopeople.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
+@ExperimentalPagingApi
 @AndroidEntryPoint
 class ListFragment : Fragment() {
     private lateinit var binding: FragmentListBinding
@@ -79,10 +83,30 @@ class ListFragment : Fragment() {
         displayDate()
         observeWeather()
         checkLocationPermission()
-        adapter = PeopleAdapter()
+        adapter = PeopleAdapter(viewModel)
         binding.rvZohoPeople.adapter = adapter
         fetchZohoPeople()
+        setUpDetailFragmentNavigation()
         return binding.root
+    }
+
+    private fun setUpDetailFragmentNavigation() {
+        viewModel.personClickEvent.observe(viewLifecycleOwner, EventObserver { clickedPerson ->
+            val action =
+                ListFragmentDirections.actionListFragmentToDetailFragment(
+                    (clickedPerson.name.first).plus(" ").plus(clickedPerson.name.last),
+                    clickedPerson.email,
+                    clickedPerson.phone,
+                    clickedPerson.gender,
+                    clickedPerson.location.coordinates.latitude,
+                    clickedPerson.location.coordinates.longitude,
+                    clickedPerson.dob.date,
+                    clickedPerson.picture.large
+                )
+            findNavController().navigate(action)
+        })
+
+
     }
 
     private fun fetchZohoPeople() {
@@ -91,14 +115,8 @@ class ListFragment : Fragment() {
                 adapter.submitData(it)
             }
         }
-
-        /*viewModel.getZohoPeople()
-        viewModel.zohoPeopleList.observe(viewLifecycleOwner) {
-            if (it != null)
-                adapter.submitData(lifecycle, it)
-        }*/
-
     }
+
 
     private fun displayDate() {
         val currentDate = SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault())
@@ -107,15 +125,12 @@ class ListFragment : Fragment() {
     }
 
     private fun getLatestLocation() {
-        Log.d("TEST", "observe location: called")
         viewModel.getLocation(Utils.isOnline(requireContext()))
     }
 
     private fun observeWeather() {
-        Log.d("TEST", "observe weather called")
         viewModel.currentWeather.observe(viewLifecycleOwner) { weather ->
             weather?.let {
-                Log.d("TEST", "observe weather - current weather: ${it.celsius}")
                 // Set the temperature text
                 binding.tvTemp.text = getString(R.string.temp_cel, it.celsius)
                 // Set the AirQuality Index text

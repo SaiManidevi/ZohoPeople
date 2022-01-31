@@ -7,7 +7,40 @@
 
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.zohointerviewtest.zohopeople.ListFragment"
+        android:name="com.zohointerviewtest.zohopeople.listscreen.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.zohointerviewtest.zohopeople.detailscreen.DetailFragment"
+        android:label="DetailFragment" >
+        <argument
+            android:name="person_name"
+            app:argType="string" />
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="phone_num"
+            app:argType="string" />
+        <argument
+            android:name="gender"
+            app:argType="string" />
+        <argument
+            android:name="latitude"
+            app:argType="string" />
+        <argument
+            android:name="logitutde"
+            app:argType="string" />
+        <argument
+            android:name="dob"
+            app:argType="string" />
+        <argument
+            android:name="image_url"
+            app:argType="string" />
+    </fragment>
 </navigation>
